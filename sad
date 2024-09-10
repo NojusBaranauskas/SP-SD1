@@ -1,12 +1,7 @@
-#include <iomanip>
+#include <iostream>
+using namespace std;
 
-Using namespace std;
-
-int main{
-if "skaicius" < 1, 2, 3, 4;
-else "neigiamas";
-if "skaicius" < 5, 6, 7, 8, 9, 10;
-else "teigiamas";
-};
-
+int main(){
+cout << "Hello World!" << endl;
 return 0;
+}
