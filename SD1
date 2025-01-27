@@ -1,0 +1,93 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <algorithm>
+#include <numeric> // vidurkiui
+#include <stdexcept> // išimtims
+
+class Studentas {
+private:
+    std::string vardas;
+    std::string pavarde;
+    std::vector<int> namuDarbai;
+    int egzaminas;
+    double galutinis;
+
+public:
+    // Konstruktoriai
+    Studentas() : vardas(""), pavarde(""), egzaminas(0), galutinis(0.0) {}
+    Studentas(const std::string& v, const std::string& p, const std::vector<int>& nd, int egz)
+        : vardas(v), pavarde(p), namuDarbai(nd), egzaminas(egz) {
+        skaiciuotiGalutiniVidurki();
+    }
+
+    // Kopijavimo konstruktorius
+    Studentas(const Studentas& other)
+        : vardas(other.vardas), pavarde(other.pavarde),
+          namuDarbai(other.namuDarbai), egzaminas(other.egzaminas),
+          galutinis(other.galutinis) {}
+
+    // Priskyrimo operatorius
+    Studentas& operator=(const Studentas& other) {
+        if (this != &other) {
+            vardas = other.vardas;
+            pavarde = other.pavarde;
+            namuDarbai = other.namuDarbai;
+            egzaminas = other.egzaminas;
+            galutinis = other.galutinis;
+        }
+        return *this;
+    }
+
+    // Destruktorius
+    ~Studentas() {}
+
+    // Galutinio pažymio skaičiavimas pagal vidurkį
+    void skaiciuotiGalutiniVidurki() {
+        if (namuDarbai.empty()) {
+            throw std::logic_error("Namų darbų sąrašas yra tuščias!");
+        }
+        double vidurkis = std::accumulate(namuDarbai.begin(), namuDarbai.end(), 0.0) / namuDarbai.size();
+        galutinis = 0.4 * vidurkis + 0.6 * egzaminas;
+    }
+
+    // Galutinio pažymio skaičiavimas pagal medianą
+    void skaiciuotiGalutiniMediana() {
+        if (namuDarbai.empty()) {
+            throw std::logic_error("Namų darbų sąrašas yra tuščias!");
+        }
+        std::sort(namuDarbai.begin(), namuDarbai.end());
+        double mediana = (namuDarbai.size() % 2 == 0) ?
+                         (namuDarbai[namuDarbai.size() / 2 - 1] + namuDarbai[namuDarbai.size() / 2]) / 2.0 :
+                         namuDarbai[namuDarbai.size() / 2];
+        galutinis = 0.4 * mediana + 0.6 * egzaminas;
+    }
+
+    // Įvedimo ir išvedimo operatoriai
+    friend std::istream& operator>>(std::istream& in, Studentas& s);
+    friend std::ostream& operator<<(std::ostream& out, const Studentas& s);
+};
+
+// Įvesties operatorius
+std::istream& operator>>(std::istream& in, Studentas& s) {
+    std::cout << "Įveskite vardą: ";
+    in >> s.vardas;
+    std::cout << "Įveskite pavardę: ";
+    in >> s.pavarde;
+    std::cout << "Įveskite namų darbų rezultatus (įveskite -1 norėdami baigti): ";
+    int nd;
+    while (in >> nd && nd != -1) {
+        s.namuDarbai.push_back(nd);
+    }
+    std::cout << "Įveskite egzamino rezultatą: ";
+    in >> s.egzaminas;
+    return in;
+}
+
+// Išvesties operatorius
+std::ostream& operator<<(std::ostream& out, const Studentas& s) {
+    out << std::setw(15) << s.pavarde << std::setw(15) << s.vardas
+        << std::setw(10) << std::fixed << std::setprecision(2) << s.galutinis;
+    return out;
+}
